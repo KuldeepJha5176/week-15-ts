@@ -2,10 +2,11 @@ import express, { json } from "express";
 import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
 import bcrypt, { hash } from "bcrypt";
-import { ContentModel, UserModel } from "./db";
+import { ContentModel, LinkModel, shareModel, UserModel } from "./db";
 import { ExitStatus } from "typescript";
 import { JWT_PASSWORD } from "./config";
 import { userMiddleware } from "./middleware";
+import { random } from "./utils";
 
 const app = express();
 app.use(express.json());
@@ -97,6 +98,33 @@ app.delete("/api/v1/content",userMiddleware,async (req, res) => {
     message: "Deleted"
   })
 });
-app.post("/api/v1/share", (req, res) => {});
-app.get("/api/v1/share", (req, res) => {});
+app.post("/api/v1/share", userMiddleware,async(req, res) => {
+  const shareableLink = req.body.shareableLink;
+  if(shareableLink) {
+    LinkModel.create({
+      userId = req.userId,
+      hash:random(10)
+    })
+  }
+  else{
+    LinkModel.deleteOne({
+      userId = req.userId
+    });
+  }
+  res.json({
+    msg:"updated shareable Link"
+  })
+});
+app.get("/api/v1/share",userMiddleware,async (req, res) => {
+  const {contentId, shareId} = req.body;
+  await shareModel.find({
+    shareId,
+    //@ts-ignore
+    userId: req.UserId
+
+  })
+  res.json({
+    shareId as String
+  })
+});
 app.listen(3000);
