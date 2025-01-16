@@ -3,8 +3,10 @@ import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
 import bcrypt, { hash } from "bcrypt";
 import { ContentModel, LinkModel,  UserModel } from "./db";
-import { ExitStatus } from "typescript";
-import { JWT_PASSWORD } from "./config";
+
+import dotenv, { config, configDotenv } from 'dotenv';
+dotenv.config();
+
 import { userMiddleware } from "./middleware";
 import { random } from "./utils";
 import cors from "cors";
@@ -46,7 +48,9 @@ app.post("/api/v1/signin", async (req, res) => {
         {
           id: existingUser._id,
         },
-        JWT_PASSWORD
+        // @ts-ignore
+        config.JWT_PASSWORD,
+      
       );
 
       res.json({

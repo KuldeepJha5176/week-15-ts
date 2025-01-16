@@ -1,7 +1,11 @@
-import mongoose,{model,Schema} from "mongoose";
-import { connection } from "./config";
+import mongoose,{connection, model,Schema} from "mongoose";
+import dotenv from 'dotenv';
+dotenv.config();
 
-mongoose.connect(connection);
+
+import { config } from './config';
+
+mongoose.connect(config.connection);
 
 const UserSchema = new Schema({
     username: {type:String , unique: true},
