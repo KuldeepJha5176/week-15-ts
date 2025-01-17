@@ -15,7 +15,7 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 const corsOptions = {
-  origin: ['http://localhost:5176', 'https://your-frontend-domain.com'], // Replace with your frontend's domains
+  origin: ['http://localhost:517', 'https://your-frontend-domain.com'], // Replace with your frontend's domains
   methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allowed HTTP methods
   allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
   credentials: true, // If you need to send cookies or credentials
@@ -49,15 +49,22 @@ app.post("/api/v1/signin", async (req, res) => {
 
   if (existingUser && existingUser.password) {
     const passwordMatch = await bcrypt.compare(password, existingUser.password);
+
     if (passwordMatch) {
-      const token = jwt.sign(
-        {
-          id: existingUser._id,
-        },
-        // @ts-ignore
-        config.JWT_PASSWORD,
-      
-      );
+        if (!process.env.jwt_secret) {
+            throw new Error("JWT_PASSWORD is not defined in the environment variables");
+        }
+
+        const token = jwt.sign(
+            {
+                id: existingUser._id, // Payload
+            },
+            process.env.jwt_secret, // Secret key
+            {
+                expiresIn: '1h', // Optional: Set token expiration
+            }
+        );
+
 
       res.json({
         token,
