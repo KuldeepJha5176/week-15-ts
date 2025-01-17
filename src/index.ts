@@ -14,6 +14,12 @@ import cors from "cors";
 const app = express();
 app.use(express.json());
 app.use(cors());
+const corsOptions = {
+  origin: ['http://localhost:5176', 'https://your-frontend-domain.com'], // Replace with your frontend's domains
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allowed HTTP methods
+  allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
+  credentials: true, // If you need to send cookies or credentials
+};
 
 app.post("/api/v1/signup", async (req, res) => {
   const username = req.body.username;
